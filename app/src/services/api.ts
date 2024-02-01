@@ -42,11 +42,29 @@ export const api: any = createApi({
     logoutDriver: builder.query<void, void>({
       query: () => `/driver/logoutDriver`,
     }),
-    getDriver: builder.query<void, void>({
+    updateCustomerLocation: builder.mutation<JSON, loginUser>({
+      query: (user) => {
+        return {
+          url: "/customer/UpdateCustomer",
+          method: "POST",
+          body: user,
+        };
+      },
+    }),
+    updateDriverLocation: builder.mutation<JSON, loginUser>({
+      query: (user) => {
+        return {
+          url: "/driver/UpdateDriver",
+          method: "POST",
+          body: user,
+        };
+      },
+    }),
+    getDriver: builder.mutation<void, void>({
       query: (user) => {
         return {
           url: "/driver/getDriver",
-          method: "GET",
+          method: "POST",
           body: user,
         };
       },
@@ -61,5 +79,7 @@ export const {
   usePostLoginCustomerMutation,
   useLazyLogoutDriverQuery,
   useLazyLogoutCustomerQuery,
-  useLazyGetDriverQuery,
+  useGetDriverMutation,
+  useUpdateCustomerLocationMutation,
+  useUpdateDriverLocationMutation,
 } = api;

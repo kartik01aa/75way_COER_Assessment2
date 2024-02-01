@@ -2,11 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from 'react-redux'
 import type { TypedUseSelectorHook } from 'react-redux'
 import { api } from "../services/api";
-import userReducer from './reducer/login'
+import userReducer from './reducer/customerReducer'
+import driverReducer from "./reducer/driverReducer";
+import bookReducer from "./reducer/bookRideReducer";
 
 export const store = configureStore({
      reducer:{
         user:userReducer,
+        driver:driverReducer,
+        ride:bookReducer,
           [api.reducerPath]: api.reducer,
   },
      middleware: (getDefaultMiddleware) =>

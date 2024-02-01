@@ -10,8 +10,22 @@ interface counter {
     authToken:string,
     refreshToken:string  
   }
+interface Idriver {
+    userStatus: User,
+    name:string,
+    authToken:string,
+    refreshToken:string,
+    status:boolean  
+  }
   interface loginUser {
 
     email:string,
     password:string  
+  }
+  interface bookRide {
+    isRequested: boolean,
+    destination:string,
+    driverId:string,
+    customerName:string,
+    isAccepted:boolean, 
   }
