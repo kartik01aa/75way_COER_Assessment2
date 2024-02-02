@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { loginDriver, registerDriver,logoutDriver, getDriver,updateDriver } from '../controllers/driver.controllers'
+import { loginDriver, registerDriver,getCustomerRequest,logoutDriver,customerRequestAccepted, getDriver,updateDriver,changeDriverStatus, requestForDriver } from '../controllers/driver.controllers'
 
 const driverRouter = Router()
 
@@ -8,5 +8,9 @@ driverRouter.post('/loginDriver',loginDriver);
 driverRouter.post('/updateDriver',updateDriver);
 driverRouter.get('/logoutDriver',logoutDriver);
 driverRouter.post('/getDriver',getDriver);
+driverRouter.post('/changeDriverStatus',changeDriverStatus);
+driverRouter.post('/requestForDriver',requestForDriver);
+driverRouter.post('/customerRequestAccepted',customerRequestAccepted);
+driverRouter.get('/getCustomerRequest/:id',getCustomerRequest);
 
 export default driverRouter;

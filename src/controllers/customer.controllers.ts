@@ -127,3 +127,18 @@ export const updateCustomer: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
+export const changeCustomerStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const {name, rideStatus } = req.body;
+    const customer = await Customer.findOne({ name });
+    if(!customer) return res.status(400).json({msg:"Customer not found."})
+    customer.rideStatus = rideStatus;
+    customer.save()
+
+    return res
+      .status(200)
+      .json({ ok: true, message: "Customer status has been updated" });
+  } catch (err) {
+    next(err);
+  }
+};

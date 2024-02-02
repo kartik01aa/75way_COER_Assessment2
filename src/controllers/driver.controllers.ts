@@ -6,7 +6,6 @@ import Jwt from "jsonwebtoken";
 export const registerDriver: RequestHandler = async (req, res, next) => {
   try {
     const { name, email, location, password, vehicleType } = req.body;
-    console.log(req.body);
 
     const expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     const pass: RegExp =
@@ -39,6 +38,7 @@ export const registerDriver: RequestHandler = async (req, res, next) => {
       location,
       password: hashPassword,
       vehicleType,
+      isActive:true,
     }).save();
 
     return res.status(200).json({ msg: "New Driver registered" });
@@ -133,5 +133,94 @@ export const updateDriver: RequestHandler = async (req, res, next) => {
       .json({ ok: true, message: "Driver location has been updated" });
   } catch (err) {
     next(err);
+  }
+};
+
+export const changeDriverStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const { isActive, name } = req.body;
+    console.log(name, isActive)
+    const driver = await Driver.findOne({ name });
+    console.log("hhhh",driver)
+    if(isActive === true){
+      await Driver.findByIdAndUpdate(
+        { _id: driver?._id },
+        {
+          isActive: !isActive,
+          location:"",
+        }
+      );
+    }
+    else{
+      await Driver.findByIdAndUpdate(
+        { _id: driver?._id },
+        {
+          isActive: !isActive,
+        }
+      );
+    }
+
+    return res
+      .status(200)
+      .json({ ok: true, message: "Driver status has been updated" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const requestForDriver: RequestHandler = async (req, res) => {
+  try {
+    const { location, customerId, driverId } = req.body;
+
+    const driver = await Driver.findOne({ _id:driverId });
+    if(!driver){
+      return res.status(400).json({msg:"driver not found!"})
+    }
+    driver.requests.push({customerId,location})
+  
+    await driver.save()
+
+    return res
+      .status(200)
+      .json({ ok: true, message: "Driver location has been updated" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const customerRequestAccepted: RequestHandler = async (req, res) => {
+  try {
+    const { customerId, location,driverId } = req.body;
+
+    const driver = await Driver.findOne({ _id:driverId });
+    if(!driver){
+      return res.status(400).json({msg:"driver not found!"})
+    }
+    let i;
+    for(i = 0; i<driver.requests.length;i++){
+        if(driver.requests[i].customerId === customerId ) break;
+    }
+    console.log(i)
+    driver.requests.splice(i,1)
+    driver.approved.push({customerId,location})
+  
+    await driver.save()
+
+    return res
+      .status(200)
+      .json({ ok: true, message: "Driver location has been updated" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getCustomerRequest: RequestHandler = async (req, res) => {
+  try {
+    const {id } = req.params;
+    const driver = await Driver.findOne({ _id:id });
+    
+    return res
+      .status(200)
+      .json({ ok: true, message: "Driver location has been updated", driver });
+  } catch (err) {
+    console.log(err);
   }
 };

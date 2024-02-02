@@ -8,6 +8,9 @@ const schema = new Schema<Driver>({
   location:{ type: String, required: true },
   password: { type: String, required: true },
   vehicleType:{ type: String, required: true },
+  isActive:{ type: Boolean, required: false },
+  requests:{ type: Array, default: [] },
+  approved:{ type: Array, default: [] },
 });
 
 const schema2 = new Schema<Customer>({
@@ -15,6 +18,7 @@ const schema2 = new Schema<Customer>({
   email: { type: String, required: true },
   location:{ type: String, required: true },
   password: { type: String, required: true },
+  rideStatus: { type: String, default:"inactive" },
 });
 
 

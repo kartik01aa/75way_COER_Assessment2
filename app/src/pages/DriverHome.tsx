@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../store/store'
 import { useState, useEffect } from 'react'
-import { useLazyLogoutDriverQuery, useUpdateDriverLocationMutation } from '../services/api'
+import { useCustomerRequestAcceptedMutation, useLazyGetCustomerRequestQuery, useLazyLogoutDriverQuery, useUpdateDriverLocationMutation } from '../services/api'
 import { logoutDriver } from '../store/reducer/driverReducer'
 import CurrentLocation from '../components/CurrentLocation'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -16,6 +16,9 @@ const DriverHome = () => {
   const storeDispatch = useAppDispatch()
   const [logout] = useLazyLogoutDriverQuery()
   const [updateDriver] = useUpdateDriverLocationMutation()
+  const [customerRequestAccepted] = useCustomerRequestAcceptedMutation()
+  const [getCustomerRequest,{data, isSuccess}] = useLazyGetCustomerRequestQuery()
+
   const handleLogout = async () => {
     const returnData = await logout()
     console.log(returnData);
@@ -28,12 +31,12 @@ const DriverHome = () => {
   }
 
   const handleIt = async (l: any) => {
-    if (location.state.id) {
-      console.log("yay", location.state.id)
+    if (location.state.id && user.status === true) {
+      console.log("yay", user.status)
       const up = await updateDriver({ location: l, id: location.state.id })
     }
   }
-  const handleAccept = (e: any) => {
+  const handleAccept = async(e: any) => {
     e.preventDefault()
     const rideDetails: bookRide = {
       isRequested: ride.isRequested,
@@ -42,14 +45,24 @@ const DriverHome = () => {
       customerName: ride.customerName,
       isAccepted: true,
     }
+  
     storeDispatch(rideBook(rideDetails))
     localStorage.setItem('rideDetails', JSON.stringify(rideDetails))
-    navigate('/driverWait')
+    console.log(data.driver.requests[0].location)
+    console.log(data.driver.requests[0].customerId)
+    await customerRequestAccepted({location:data.driver.requests[0].location, customerId:data.driver.requests[0].customerId ,driverId: location.state.id})
+    navigate('/driverWait',{ state: { place: data.driver.requests[0].location} })
   }
 
+  const runn = async()=>{
+    const d = await getCustomerRequest({id:location.state.id})
+    console.log("start")
+    console.log(d.driver)
+  }
   useEffect(() => {
-    console.log(ride)
-  }, [ride])
+    runn()
+    
+  }, [])
 
   return (
     <>
@@ -57,13 +70,16 @@ const DriverHome = () => {
       {user.status === true ? <CurrentLocation handleIt={handleIt} /> : ""}
       <div className="container px-5 py-24 w-1/2 mx-auto my-6 bg-blue-50 rounded-xl text-4xl text-center text-gray-300">
         {
-          ride.isRequested === true ?
-            <div className='flex justify-around p-4 text-2xl rounded-xl text-black border'>
-              <p>{ride.customerName}</p>
-              <p>{ride.destination}</p>
+           isSuccess ?
+           data.driver.requests.map((d:any)=>{
+              return <div className='flex justify-around p-4 text-2xl rounded-xl text-black border'>
+              <p>{d.customerId}</p>
+              <p>{d.location}</p>
               <button onClick={handleAccept} className='bg-blue-500 rounded-xl py-1 px-3'>Yes</button>
               <button className='bg-blue-500 rounded-xl py-1 px-3'>No</button>
-            </div> :
+            </div>
+           })
+             :
             <p>No Request Yet</p>
         }
       </div>

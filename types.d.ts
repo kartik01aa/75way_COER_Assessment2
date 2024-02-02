@@ -3,6 +3,7 @@ export interface Customer {
   email: string;
   location: string;
   password: string;
+  rideStatus:string;
 }
 
 type Vehicle = "Two-wheel" | "four-wheel";
@@ -13,4 +14,7 @@ export interface Driver {
   location: string;
   password: string;
   vehicleType: Vehicle;
+  isActive:boolean;
+  requests:Array;
+  approved:Array;
 }

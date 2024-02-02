@@ -1,7 +1,7 @@
 import Header from '../components/Header'
 import { useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../store/store'
-import { useGetDriverMutation, useLazyLogoutCustomerQuery, useUpdateCustomerLocationMutation } from '../services/api'
+import { useChangeCustomerStatusMutation, useCheckCustomerRequestMutation, useGetDriverMutation, useLazyLogoutCustomerQuery, useUpdateCustomerLocationMutation } from '../services/api'
 import { logoutCustomer } from '../store/reducer/customerReducer'
 import CurrentLocation from '../components/CurrentLocation'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -27,6 +27,8 @@ const CustomerHome = () => {
   const [getDriver, { data, isSuccess }] = useGetDriverMutation()
   const location = useLocation();
   const [updateCustomer] = useUpdateCustomerLocationMutation()
+  const [customerRequest] = useCheckCustomerRequestMutation()
+  const[changeCustomerStatus] = useChangeCustomerStatusMutation()
   const [cusLocation, setCusLocation] = useState('')
   const handleSubmit = async (e: any) => {
     e.preventDefault()
@@ -42,7 +44,7 @@ const CustomerHome = () => {
     }
   }
 
-  const handleBookRide = (e: any, name: any) => {
+  const handleBookRide = async(e: any, name: any, driverId:any) => {
     e.preventDefault()
     const rideDetails: bookRide = {
       isRequested: true,
@@ -53,6 +55,9 @@ const CustomerHome = () => {
     }
     storeDispatch(rideBook(rideDetails))
     localStorage.setItem('rideDetails', JSON.stringify(rideDetails))
+    console.log(dest,user.name,driverId)
+    await customerRequest({location:dest, customerId:user.name, driverId:driverId})
+    await changeCustomerStatus({name:user.name ,rideStatus:"waiting"})
     navigate('/customerWait')
   }
 
@@ -101,7 +106,7 @@ const CustomerHome = () => {
             return <div className='border-b flex justify-between text-gray-700 text-2xl'>
               <p key={d.name} className='p-4 ' >{d.name}</p>
               <p className='p-4 '>{d.vehicleType}</p>
-              <button onClick={(e) => handleBookRide(e, d.name)} className='m-4 w-auto rounded-md bg-black ml-4 px-3  text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'>Book Ride</button>
+              <button onClick={(e) => handleBookRide(e, d.name, d._id)} className='m-4 w-auto rounded-md bg-black ml-4 px-3  text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'>Book Ride</button>
             </div>
           })}</>
           :

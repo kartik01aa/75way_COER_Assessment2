@@ -1,13 +1,15 @@
-import React from 'react'
+import {useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../store/store'
 import { loginDriver } from '../store/reducer/driverReducer'
+import { useChangeDriverStatusMutation } from '../services/api'
 
 const HeaderDriver = (props: any) => {
   const user = useAppSelector(state => state.driver)
   const storeDispatch = useAppDispatch()
+  const [changeDriverStatus,{data,isSuccess}] = useChangeDriverStatusMutation()
 
-  const handleStatus = (e: any) => {
+  const handleStatus = async(e: any) => {
     e.preventDefault();
     const render = {
       userStatus: user.userStatus,
@@ -18,8 +20,9 @@ const HeaderDriver = (props: any) => {
     }
     storeDispatch(loginDriver(render))
     localStorage.setItem('driverLogged', JSON.stringify(render))
-
+    await changeDriverStatus({isActive:user.status, name:user.name})
   }
+
 
 
   return (
