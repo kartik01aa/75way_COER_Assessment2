@@ -129,16 +129,58 @@ export const updateCustomer: RequestHandler = async (req, res, next) => {
 };
 export const changeCustomerStatus: RequestHandler = async (req, res, next) => {
   try {
-    const {name, rideStatus } = req.body;
+    const { name, rideStatus } = req.body;
     const customer = await Customer.findOne({ name });
-    if(!customer) return res.status(400).json({msg:"Customer not found."})
+    if (!customer) return res.status(400).json({ msg: "Customer not found." });
     customer.rideStatus = rideStatus;
-    customer.save()
+    customer.save();
 
     return res
       .status(200)
       .json({ ok: true, message: "Customer status has been updated" });
   } catch (err) {
     next(err);
+  }
+};
+export const getCustomerData: RequestHandler = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const customer = await Customer.findOne({ name });
+
+    return res.status(200).json({
+      ok: true,
+      message: "Customer information retrived successfully.",
+      customer,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getCustomerHistory: RequestHandler = async (req, res) => {
+  try {
+    const { name, driverId, dest } = req.body;
+    const customer = await Customer.findOne({ name });
+ 
+    if (!customer) {
+      return res.status(404).json({ msg: "Customer not found." });
+    }
+    console.log("pass1");
+    const request = {
+      name,
+      driverId,
+      dest,
+    };
+    customer.rideHistory.push(request);
+    console.log("pass2");
+    console.log("customer :-", customer);
+    await customer.save();
+
+    return res.status(200).json({
+      ok: true,
+      message: "Customer information retrived successfully.",
+      customer,
+    });
+  } catch (err) {
+    console.log(err);
   }
 };

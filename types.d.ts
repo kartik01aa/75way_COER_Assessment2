@@ -4,6 +4,7 @@ export interface Customer {
   location: string;
   password: string;
   rideStatus:string;
+  rideHistory:Array;
 }
 
 type Vehicle = "Two-wheel" | "four-wheel";

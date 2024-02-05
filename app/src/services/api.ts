@@ -43,7 +43,10 @@ export const api: any = createApi({
       query: () => `/driver/logoutDriver`,
     }),
     getCustomerRequest: builder.query<void, any>({
-      query: ({id}) => `/driver/getCustomerRequest/${id}`,
+      query: ({ id }) => `/driver/getCustomerRequest/${id}`,
+    }),
+    removeApprovedRequest: builder.query<void, any>({
+      query: ({ driverId }) => `/driver/removeApprovedRequest/${driverId}`,
     }),
     updateCustomerLocation: builder.mutation<JSON, loginUser>({
       query: (user) => {
@@ -107,7 +110,25 @@ export const api: any = createApi({
           body: user,
         };
       },
-    }),  
+    }),
+    getCustomerData: builder.mutation<void, void>({
+      query: (user) => {
+        return {
+          url: "/customer/getCustomerData",
+          method: "POST",
+          body: user,
+        };
+      },
+    }),
+    getCustomerHistory: builder.mutation<void, void>({
+      query: (user) => {
+        return {
+          url: "/customer/getCustomerHistory",
+          method: "POST",
+          body: user,
+        };
+      },
+    }),
   }),
 });
 
@@ -117,7 +138,9 @@ export const {
   usePostLoginDriverMutation,
   usePostLoginCustomerMutation,
   useLazyLogoutDriverQuery,
+  useLazyRemoveApprovedRequestQuery,
   useLazyGetCustomerRequestQuery,
+  useGetCustomerDataMutation,
   useLazyLogoutCustomerQuery,
   useGetDriverMutation,
   useUpdateCustomerLocationMutation,
@@ -126,4 +149,5 @@ export const {
   useCheckCustomerRequestMutation,
   useCustomerRequestAcceptedMutation,
   useChangeCustomerStatusMutation,
+  useGetCustomerHistoryMutation,
 } = api;

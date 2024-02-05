@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { rideBook } from './store/reducer/bookRideReducer';
 import CustomerWait from './pages/CustomerWait';
 import DriverWait from './pages/DriverWait';
+import RideHistory from './pages/RideHistory';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -40,6 +41,7 @@ function App() {
         <Route path='/driverHome' element={<DriverHome />} />
         <Route path='/customerWait' element={<CustomerWait />} />
         <Route path='/driverWait' element={<DriverWait />} />
+        <Route path='/rideHistory' element={<RideHistory />} />
       </Routes>
     </BrowserRouter>
 

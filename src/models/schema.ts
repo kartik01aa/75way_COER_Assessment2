@@ -19,6 +19,7 @@ const schema2 = new Schema<Customer>({
   location:{ type: String, required: true },
   password: { type: String, required: true },
   rideStatus: { type: String, default:"inactive" },
+  rideHistory: { type: Array, default:[] },
 });
 
 

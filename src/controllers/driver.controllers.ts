@@ -38,7 +38,7 @@ export const registerDriver: RequestHandler = async (req, res, next) => {
       location,
       password: hashPassword,
       vehicleType,
-      isActive:true,
+      isActive: true,
     }).save();
 
     return res.status(200).json({ msg: "New Driver registered" });
@@ -139,19 +139,18 @@ export const updateDriver: RequestHandler = async (req, res, next) => {
 export const changeDriverStatus: RequestHandler = async (req, res, next) => {
   try {
     const { isActive, name } = req.body;
-    console.log(name, isActive)
+    console.log(name, isActive);
     const driver = await Driver.findOne({ name });
-    console.log("hhhh",driver)
-    if(isActive === true){
+    console.log("hhhh", driver);
+    if (isActive === true) {
       await Driver.findByIdAndUpdate(
         { _id: driver?._id },
         {
           isActive: !isActive,
-          location:"",
+          location: "",
         }
       );
-    }
-    else{
+    } else {
       await Driver.findByIdAndUpdate(
         { _id: driver?._id },
         {
@@ -172,13 +171,12 @@ export const requestForDriver: RequestHandler = async (req, res) => {
   try {
     const { location, customerId, driverId } = req.body;
 
-    const driver = await Driver.findOne({ _id:driverId });
-    if(!driver){
-      return res.status(400).json({msg:"driver not found!"})
+    const driver = await Driver.findOne({ _id: driverId });
+    if (!driver) {
+      return res.status(400).json({ msg: "driver not found!" });
     }
-    driver.requests.push({customerId,location})
-  
-    await driver.save()
+    driver.requests.push({ customerId, location });
+    await driver.save();
 
     return res
       .status(200)
@@ -189,21 +187,21 @@ export const requestForDriver: RequestHandler = async (req, res) => {
 };
 export const customerRequestAccepted: RequestHandler = async (req, res) => {
   try {
-    const { customerId, location,driverId } = req.body;
+    const { customerId, location, driverId } = req.body;
 
-    const driver = await Driver.findOne({ _id:driverId });
-    if(!driver){
-      return res.status(400).json({msg:"driver not found!"})
+    const driver = await Driver.findOne({ _id: driverId });
+    if (!driver) {
+      return res.status(400).json({ msg: "driver not found!" });
     }
     let i;
-    for(i = 0; i<driver.requests.length;i++){
-        if(driver.requests[i].customerId === customerId ) break;
+    for (i = 0; i < driver.requests.length; i++) {
+      if (driver.requests[i].customerId === customerId) break;
     }
-    console.log(i)
-    driver.requests.splice(i,1)
-    driver.approved.push({customerId,location})
-  
-    await driver.save()
+   
+    driver.requests.splice(i, 1);
+    driver.approved.push({ customerId, location });
+
+    await driver.save();
 
     return res
       .status(200)
@@ -212,14 +210,40 @@ export const customerRequestAccepted: RequestHandler = async (req, res) => {
     console.log(err);
   }
 };
-export const getCustomerRequest: RequestHandler = async (req, res) => {
+export const removeApprovedRequest: RequestHandler = async (req, res) => {
   try {
-    const {id } = req.params;
-    const driver = await Driver.findOne({ _id:id });
-    
+    const { id } = req.params;
+    console.log(id)
+    console.log(req.params)
+    const driver = await Driver.findOne({ _id: id });
+    if (!driver) {
+      return res.status(400).json({ msg: "driver not found!" });
+    }
+
+    driver.approved = [];
+    console.log("Driver pop")
+
+    await driver.save();
+
     return res
       .status(200)
-      .json({ ok: true, message: "Driver location has been updated", driver });
+      .json({ ok: true, message: "Driver approved list is emptied." });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getCustomerRequest: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const driver = await Driver.findOne({ _id: id });
+
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        message: "Driver information retrived successfully.",
+        driver,
+      });
   } catch (err) {
     console.log(err);
   }

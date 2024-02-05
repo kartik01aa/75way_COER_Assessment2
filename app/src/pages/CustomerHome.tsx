@@ -28,7 +28,7 @@ const CustomerHome = () => {
   const location = useLocation();
   const [updateCustomer] = useUpdateCustomerLocationMutation()
   const [customerRequest] = useCheckCustomerRequestMutation()
-  const[changeCustomerStatus] = useChangeCustomerStatusMutation()
+  const [changeCustomerStatus] = useChangeCustomerStatusMutation()
   const [cusLocation, setCusLocation] = useState('')
   const handleSubmit = async (e: any) => {
     e.preventDefault()
@@ -44,7 +44,7 @@ const CustomerHome = () => {
     }
   }
 
-  const handleBookRide = async(e: any, name: any, driverId:any) => {
+  const handleBookRide = async (e: any, name: any, driverId: any) => {
     e.preventDefault()
     const rideDetails: bookRide = {
       isRequested: true,
@@ -55,10 +55,10 @@ const CustomerHome = () => {
     }
     storeDispatch(rideBook(rideDetails))
     localStorage.setItem('rideDetails', JSON.stringify(rideDetails))
-    console.log(dest,user.name,driverId)
-    await customerRequest({location:dest, customerId:user.name, driverId:driverId})
-    await changeCustomerStatus({name:user.name ,rideStatus:"waiting"})
-    navigate('/customerWait')
+    console.log(dest, user.name, driverId)
+    await customerRequest({ location: dest, customerId: user.name, driverId: driverId })
+    await changeCustomerStatus({ name: user.name, rideStatus: "waiting" })
+    navigate('/customerWait', { state: { name: user.name, dest: dest, driverId: driverId } })
   }
 
   useEffect(() => {
